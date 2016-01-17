@@ -1,7 +1,6 @@
 package formats;
 
-import utilities.CustomPalette;
-import utilities.ReduceColors;
+import utilities.*;
 
 import java.awt.image.*;
 import java.io.*;
@@ -24,11 +23,10 @@ public class BCI {
         write4bytes(W, out);
         write4bytes(H, out);
 
-        ReduceColors.setPalette(CustomPalette.create(image));
-        byte[] b = compress(image);
+        byte[] bytes = Compression.run(image);
 
-        for (int i = 0; i < b.length; i++) {
-            out.write(b[i]);
+        for (int i = 0; i < bytes.length; i++) {
+            out.write(bytes[i]);
         }
 
         out.close();
@@ -38,51 +36,55 @@ public class BCI {
         InputStream in = new FileInputStream(filename);
         BufferedImage img;
 
-        // Check magic value.
+        // Read BCI waterstamp from file
         for (int i = 0; i < BCI.length; i++) {
             if (in.read() != BCI[i]) { throw new IOException(); }
         }
 
-        // Read width and height
+        // Read image width and height from file
         int width  = read4bytes(in);
         int height = read4bytes(in);
 
         byte[] buffer = new byte[4096];
 
-        byte[] data = null;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+        byte[] bytes = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            int length = -1;
-            while ((length = in.read(buffer)) != -1) {
-                bos.write(buffer, 0, length);
-            }
-
-            data = bos.toByteArray();
-
+        int length = -1;
+        while ((length = in.read(buffer)) != -1) {
+            bos.write(buffer, 0, length);
         }
 
-        img = decompress(width, height, data);
+        bytes = bos.toByteArray();
+
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = img.getRaster();
+
+        bytes = Decompression.run(bytes);
+
+        for (int y = 0, i = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                raster.setPixel(x, y, new int[] {
+                        bytes[i++] & 0xFF,
+                        bytes[i++] & 0xFF,
+                        bytes[i++] & 0xFF,
+                });
+            }
+        }
+
         return img;
     }
 
     private static void write4bytes(int v, OutputStream out) throws IOException {
-        out.write( v >>> 3*8);
-        out.write((v >>> 2*8) & 0xFF);
-        out.write((v >>>   8) & 0xFF);
-        out.write(v & 0xFF);
+        out.write(v>>>3*8);
+        out.write(v>>>2*8 & 255);
+        out.write(v>>>1*8 & 255);
+        out.write(v       & 255);
     }
 
     private static int read4bytes(InputStream in) throws IOException {
         int b, v = 0;
-//        b = in.read(); if (b < 0) { throw new EOFException(); }
-//        v = b<<3*8;
-//        b = in.read(); if (b < 0) { throw new EOFException(); }
-//        v |= b<<2*8;
-//        b = in.read(); if (b < 0) { throw new EOFException(); }
-//        v |= b<<1*8;
-//        b = in.read(); if (b < 0) { throw new EOFException(); }
-//        v |= b;
-//        return v;
+
         for (int i = 3; i >= 0; i--) {
             b = in.read();
             if (b < 0) {
@@ -90,38 +92,7 @@ public class BCI {
             }
             v |= b << i * 8;
         }
+
         return v;
-    }
-
-
-    private static byte[] compress(BufferedImage image) {
-        byte[] b = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
-        b = ReduceColors.run(b);
-
-        return b;
-    }
-
-    private static BufferedImage decompress(int width, int height, byte[] bytes) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        WritableRaster raster = img.getRaster();
-
-        System.out.println("Bytes (compressed) = " + bytes.length);
-
-        bytes = ReduceColors.revert(bytes);
-
-        System.out.println("Bytes (decompressed) = " + bytes.length);
-        System.out.println("Pixels (3bytes/p) = " + (bytes.length / 3));
-
-        int i = 0;
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                raster.setPixel(x, y, new int[] {bytes[i] & 0xFF, bytes[i + 1] & 0xFF, bytes[i + 2] & 0xFF});
-
-                i += 3;
-            }
-        }
-
-        return img;
     }
 }
