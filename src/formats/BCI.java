@@ -42,8 +42,8 @@ public class BCI {
         }
 
         // Read image width and height from file
-        int width  = read4bytes(in);
-        int height = read4bytes(in);
+        int W  = read4bytes(in);
+        int H = read4bytes(in);
 
         byte[] buffer = new byte[4096];
 
@@ -57,13 +57,13 @@ public class BCI {
 
         bytes = bos.toByteArray();
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = img.getRaster();
 
         bytes = Decompression.run(bytes);
 
-        for (int y = 0, i = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0, i = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
                 raster.setPixel(x, y, new int[] {
                         bytes[i++] & 0xFF,
                         bytes[i++] & 0xFF,

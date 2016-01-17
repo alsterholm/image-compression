@@ -1,11 +1,14 @@
 package utilities;
 
+import tests.Config;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  *
@@ -46,8 +49,8 @@ public class Compression {
 
         // Finding all colors that exists in the image.
         int[] p = new int[3];
-        for (int x = 0, W = image.getWidth(), color; x < W; x ++) {
-            for (int y = 0, H = image.getHeight(); y < H; y ++) {
+        for (int x = 0, W = image.getWidth(), color; x < W; x += 5) {
+            for (int y = 0, H = image.getHeight(); y < H; y += 5) {
                 p = raster.getPixel(x, y, p);
 
                 color = ImageUtils.toInt(p[0], p[1], p[2]);
@@ -62,14 +65,13 @@ public class Compression {
         LinkedList<Integer> list = new LinkedList<>(map.keySet());
 
         // Sorting the list by the most frequently occuring colors first.
-        list.sort((o1, o2) -> {
-            return map.get(o2) - map.get(o1);
-        });
+        list.sort((o1, o2) -> map.get(o2) - map.get(o1));
 
         colors[0] = list.get(0);
-        boolean enoughDistance = true;
 
         for (int i = 0, index = 1; i < list.size() && index < 232; i++) {
+            boolean enoughDistance = true;
+
             for (int j = 0; j < index; j++) {
                 // Checking if the colors are separated enough to add, in order
                 // to get a good spread.
@@ -81,14 +83,24 @@ public class Compression {
 
             // If no colors that were to similar was found, including
             // the color.
-            if (enoughDistance)
+            if (enoughDistance) {
                 colors[index++] = list.get(i);
+            }
         }
 
         // Adding greyscale colors to the list of colors
-        for (int i = 232, intensity = 9; i <= 255; i++) {
+        for (int i = 232, intensity = 0; i <= 255; i++) {
             colors[i] = ImageUtils.toInt(intensity, intensity, intensity);
-            intensity = Math.min(255, intensity + 12);
+            intensity = Math.min(255, intensity + 13);
+        }
+        colors[232] = 0x000000;
+        colors[233] = 0x080808;
+        colors[255] = 0xFFFFFF;
+
+        int intensity = 8;
+        for (int i = 234; i < 255; i++) {
+            intensity += 10;
+            colors[i] = ImageUtils.toInt(intensity, intensity, intensity);
         }
 
         return colors;
