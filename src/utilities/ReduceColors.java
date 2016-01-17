@@ -4,7 +4,7 @@ package utilities;
  * Created by andreas on 2016-01-17.
  */
 public class ReduceColors {
-    public static final int[] PALETTE = new int[] {
+    public static int[] PALETTE = new int[] {
             0x000000, 0x800000, 0x008000, 0x808000, 0x000080, 0x800080, 0x008080, 0xc0c0c0,
             0x808080, 0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff,
             0x000000, 0x00005f, 0x000087, 0x0000af, 0x0000d7, 0x0000ff, 0x005f00, 0x005f5f,
@@ -78,34 +78,22 @@ public class ReduceColors {
         return out;
     }
 
+    public static void setPalette(int[] palette) {
+        PALETTE = palette;
+    }
+
     private static int getCorrespondingColor(int b, int g, int r) {
         int color = -1;
-        double T = r + g +b;
+        int c = ImageUtils.toInt(b, g, r);
+        double minDistance = Double.MAX_VALUE;
 
-
-        if (r == 0 && g == 0 && b == 0) {
-            color = 0;
-        } else if (r == g && r == b) {
-            if (r > 245)
-                color = 231;
-            else 
-                color = 232 +  (int) (T / (256 * 3)) * 24;
-        //NOT WORKING!!!! //color = 16 + (int) (T / 765) * 216;
-        } else {
-            int c = ImageUtils.toInt(b, g, r);
-            double minDistance = Double.MAX_VALUE;
-            for (int p = 0; p < PALETTE.length; p++) {
-                double d = ImageUtils.distanceInLAB(PALETTE[p], c);
-                if (d < minDistance) {
-                    color = p;
-                    minDistance = d;
-                }
+        for (int p = 0; p < PALETTE.length; p++) {
+            double d = ImageUtils.distanceInLAB(PALETTE[p], c);
+            if (d < minDistance) {
+                color = p;
+                minDistance = d;
             }
         }
-
-        //if (color == 0 ) {
-         //   System.out.printf("R=%s, G=%s, B=%s\n", r, g, b);
-        //}
 
         return color;
     }

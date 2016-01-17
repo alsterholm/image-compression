@@ -1,5 +1,6 @@
 package graphics;
 
+import utilities.CustomPalette;
 import utilities.ReduceColors;
 
 import java.awt.image.*;
@@ -25,6 +26,7 @@ public class Compressed {
         write4bytes(W, out);
         write4bytes(H, out);
 
+        ReduceColors.setPalette(CustomPalette.create(image));
         byte[] b = toSHIT(image);
 
         for (int i = 0; i < b.length; i++) {
