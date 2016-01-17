@@ -1,26 +1,29 @@
 package utilities;
 
-import tests.Config;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
- *
+ *Class that handles the compression of  a MTG image-file to a BCI file by changing the color depth
+ * to 256 colors. It uses an array of 2556 colors created from the image that is supplied. The color
+ * array is written to the beginning of the byte-array that is created by this class.
  * @author Jimmy Lindström (ae7220)
  * @author Andreas Indal (ae2922)
  */
 public class Compression {
+    /**
+     *
+     * Runs the compression
+     * @param image the image file to compress
+     * @return byte[] containing compressed image
+     */
     public static byte[] run(BufferedImage image) {
         byte[] bytes = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
         byte[] out = new byte[(256 * 4) + (bytes.length / 3)];
         int index = 0;
-
+        //creates the color palette
         int[] colors = Compression.createColors(image);
 
         // Write used colors to image
@@ -30,7 +33,8 @@ public class Compression {
                 out[index++] = b;
             }
         }
-
+        //loops through the byte[] bytes getting original color and the replacing
+        //it with it's equivalent color from created color palette
         for (int i = 0; i < bytes.length; i += 3) {
             int b = bytes[i + 2] & 0xFF;
             int g = bytes[i + 1] & 0xFF;
@@ -42,13 +46,22 @@ public class Compression {
         return out;
     }
 
+    /**
+     * Creates an array of the most frequent colors in the picture that differs
+     * by a threshold value
+     * @param image the image to compress
+     * @return color array with integers
+     */
     private static int[] createColors(BufferedImage image) {
         int[] colors = new int[256];
         HashMap<Integer, Integer> map = new HashMap<>();
         Raster raster = image.getRaster();
 
-        // Finding all colors that exists in the image.
+        // Finding all colors that exists in the image and putting
+        // them in a temporary Map with color as key, and occurrences as value
         int[] p = new int[3];
+        //The loop doesn't loop through all the pixels, it jumps 5 pixels/iteration
+        //in both width and height to save some time
         for (int x = 0, W = image.getWidth(), color; x < W; x += 5) {
             for (int y = 0, H = image.getHeight(); y < H; y += 5) {
                 p = raster.getPixel(x, y, p);
@@ -60,13 +73,15 @@ public class Compression {
             }
         }
 
-        // Creating a list containing the keys of the hashmap (that is,
+        // Creating a temporary list containing the keys of the hashmap (that is,
         // the colors that were found in the image).
         LinkedList<Integer> list = new LinkedList<>(map.keySet());
 
         // Sorting the list by the most frequently occuring colors first.
         list.sort((o1, o2) -> map.get(o2) - map.get(o1));
 
+        //Adding the colors that are the most frequent and that differs by the threshold
+        //value to the final array of colors
         colors[0] = list.get(0);
 
         for (int i = 0, index = 1; i < list.size() && index < 232; i++) {
@@ -93,24 +108,25 @@ public class Compression {
             colors[i] = ImageUtils.toInt(intensity, intensity, intensity);
             intensity = Math.min(255, intensity + 13);
         }
-        colors[232] = 0x000000;
-        colors[233] = 0x080808;
-        colors[255] = 0xFFFFFF;
-
-        int intensity = 8;
-        for (int i = 234; i < 255; i++) {
-            intensity += 10;
-            colors[i] = ImageUtils.toInt(intensity, intensity, intensity);
-        }
-
         return colors;
     }
 
+    /**
+     * Returns the color closest to the color passed to method as parameter(int b,g,r)
+     * from the color palette
+     * @param b int value for blue color
+     * @param g int value for green color
+     * @param r int value for red color
+     * @param colors array containing color palette
+     * @return the equivalent color
+     */
     private static int getEquivalentColor(int b, int g, int r, int[] colors) {
         int color = -1;
         int c = ImageUtils.toInt(b, g, r);
         double minDistance = Double.MAX_VALUE;
 
+        //looping through the colors array comparing each color to the color
+        //from original image and picking the one closest.
         for (int p = 0; p < colors.length; p++) {
             double d = ImageUtils.distanceInLAB(colors[p], c);
             if (d < minDistance) {
