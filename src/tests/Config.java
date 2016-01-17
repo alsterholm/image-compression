@@ -1,9 +1,12 @@
 package tests;
 
 /**
- * Created by andreas on 2016-01-17.
+ * Test config
+ *
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class Config {
-    public final static String PATH  = "C:\\Users\\Jimmy\\git\\image-compression\\src\\resources\\";
-    public final static String IMAGE = "cartoon";
+    public final static String PATH  = "/Users/andreas/code/java/image-compression/src/resources/";
+    public final static String IMAGE = "green_boat";
 }

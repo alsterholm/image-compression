@@ -8,21 +8,33 @@ import java.io.*;
 /**
  * Class to compress an image to the Seriously High-tech Image Type (BCI) format.
  *
- * @author Jimmy Lindström & Andreas Indal
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class BCI {
-    private final static byte[] BCI = "bci_file".getBytes();
+    private final static byte[] WATERMARK = "bci_file".getBytes();
 
+    /**
+     * Write a BCI image to file.
+     *
+     * @param image Image
+     * @param filename Filename
+     * @throws IOException
+     */
     public static void write(BufferedImage image, String filename) throws IOException {
         int W = image.getWidth();
         int H = image.getHeight();
 
         OutputStream out = new FileOutputStream(filename);
-        out.write(BCI);
 
+        // Write the watermark to the file
+        out.write(WATERMARK);
+
+        // Write the width and height to the file
         write4bytes(W, out);
         write4bytes(H, out);
 
+        // Run the compression
         byte[] bytes = Compression.run(image);
 
         for (int i = 0; i < bytes.length; i++) {
@@ -32,13 +44,20 @@ public class BCI {
         out.close();
     }
 
+    /**
+     * Read a BCI image from file.
+     *
+     * @param filename Filename
+     * @return BufferedImage
+     * @throws IOException
+     */
     public static BufferedImage read(String filename) throws IOException {
         InputStream in = new FileInputStream(filename);
         BufferedImage img;
 
-        // Read BCI waterstamp from file
-        for (int i = 0; i < BCI.length; i++) {
-            if (in.read() != BCI[i]) { throw new IOException(); }
+        // Read BCI watermark from file
+        for (int i = 0; i < WATERMARK.length; i++) {
+            if (in.read() != WATERMARK[i]) { throw new IOException(); }
         }
 
         // Read image width and height from file
@@ -47,7 +66,6 @@ public class BCI {
 
         byte[] buffer = new byte[4096];
 
-        byte[] bytes = null;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         int length = -1;
@@ -55,12 +73,13 @@ public class BCI {
             bos.write(buffer, 0, length);
         }
 
-        bytes = bos.toByteArray();
+        byte[] bytes = bos.toByteArray();
+
+        // Run the decompression
+        bytes = Decompression.run(bytes);
 
         img = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = img.getRaster();
-
-        bytes = Decompression.run(bytes);
 
         for (int y = 0, i = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
@@ -75,6 +94,13 @@ public class BCI {
         return img;
     }
 
+    /**
+     * Writes 4 bytes to the specified output stream.
+     *
+     * @param v Value
+     * @param out Output stream
+     * @throws IOException
+     */
     private static void write4bytes(int v, OutputStream out) throws IOException {
         out.write(v>>>3*8);
         out.write(v>>>2*8 & 255);
@@ -82,6 +108,13 @@ public class BCI {
         out.write(v       & 255);
     }
 
+    /**
+     * Read 4 bytes from an input stream.
+     *
+     * @param in Input stream
+     * @return Value
+     * @throws IOException
+     */
     private static int read4bytes(InputStream in) throws IOException {
         int b, v = 0;
 

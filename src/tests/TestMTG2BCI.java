@@ -1,17 +1,19 @@
 package tests;
 
-import app.Main;
+import app.Application;
 
 /**
- * Created by andreas on 2016-01-17.
+ * Test
+ *
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class TestMTG2BCI {
     public static void main(String[] args) {
-        String mode = "mtg2shit";
+        String mode = "mtg2bci";
         String in = Config.PATH + Config.IMAGE + ".mtg";
-        String out = Config.PATH + Config.IMAGE + ".shit";
+        String out = Config.PATH + Config.IMAGE + ".bci";
 
-
-        Main.main(new String[] { mode, in, out });
+        Application.run(mode, in, out);
     }
 }

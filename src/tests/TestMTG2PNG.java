@@ -1,9 +1,12 @@
 package tests;
 
-import app.Main;
+import app.Application;
 
 /**
- * Created by andreas on 2016-01-17.
+ * Test
+ *
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class TestMTG2PNG {
     public static void main(String[] args) {
@@ -11,6 +14,6 @@ public class TestMTG2PNG {
         String in = Config.PATH + Config.IMAGE + "-decompressed.mtg";
         String out = Config.PATH + Config.IMAGE + "-new.png";
 
-        Main.main(new String[]{mode, in, out});
+        Application.run(mode, in, out);
     }
 }

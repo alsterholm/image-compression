@@ -1,16 +1,19 @@
 package tests;
 
-import app.Main;
+import app.Application;
 
 /**
- * Created by andreas on 2016-01-17.
+ * Test
+ *
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class TestBCI2MTG {
     public static void main(String[] args) {
-        String mode = "shit2mtg";
-        String in = Config.PATH + Config.IMAGE + ".shit";
+        String mode = "bci2mtg";
+        String in = Config.PATH + Config.IMAGE + ".bci";
         String out = Config.PATH + Config.IMAGE + "-decompressed.mtg";
 
-        Main.main(new String[] {mode, in, out});
+        Application.run(mode, in, out);
     }
 }

@@ -1,7 +1,10 @@
 package tests;
 
 /**
- * Created by andreas on 2016-01-17.
+ * Test class
+ *
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class Test {
     public static void main(String[] args) {
