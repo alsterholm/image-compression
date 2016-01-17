@@ -8,8 +8,8 @@ import app.Main;
 public class TestMTG2SHIT {
     public static void main(String[] args) {
         String mode = "mtg2shit";
-        String in = "/Users/andreas/code/java/image-compression/src/resources/cartoon.mtg";
-        String out = "/Users/andreas/code/java/image-compression/src/resources/cartoon.shit";
+        String in = Config.PATH + Config.IMAGE + ".mtg";
+        String out = Config.PATH + Config.IMAGE + ".shit";
 
 
         Main.main(new String[] { mode, in, out });

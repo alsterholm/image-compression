@@ -1,4 +1,4 @@
-package graphics;
+package formats;
 
 import utilities.CustomPalette;
 import utilities.ReduceColors;
@@ -11,7 +11,7 @@ import java.io.*;
  *
  * @author Jimmy Lindström & Andreas Indal
  */
-public class Compressed {
+public class BCI {
     private final static byte[] SHIT = "shitfile".getBytes();
 
     private final static class SHITException extends IOException {}

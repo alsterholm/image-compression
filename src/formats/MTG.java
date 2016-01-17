@@ -1,12 +1,12 @@
-package graphics;
+package formats;
 
 import java.awt.image.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import javax.imageio.*;
 
-public class Megatron {
-    /** Magic start string to signify Megatron file format. */
+public class MTG {
+    /** Magic start string to signify MTG file format. */
     final static byte[] magic = "mEgaMADNZ!".getBytes(StandardCharsets.US_ASCII);
 
     public final static class InvalidMegatronFileException extends IOException { }
@@ -94,9 +94,9 @@ public class Megatron {
         }
         if ("makemtg".equals(args[0])) {
             BufferedImage img  = ImageIO.read(new File(args[1]));
-            Megatron.write(img, args[2]);
+            MTG.write(img, args[2]);
         } else {
-            BufferedImage img = Megatron.read(args[1]);
+            BufferedImage img = MTG.read(args[1]);
             ImageIO.write(img, "PNG", new File(args[2]));
         }
     }
