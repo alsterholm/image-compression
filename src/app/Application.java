@@ -42,7 +42,23 @@ public class Application {
                     break;
             }
         } catch (IOException e) {
-
+            Application.help();
         }
+    }
+
+    /**
+     * Print a helpful message out to the console.
+     */
+    public static void help() {
+        String output = "BCI Image Compression by Jimmy Lindström & Andreas Indal\n" +
+                "\n" +
+                "Usage: [mode] [input file] [output file]\n" +
+                "\n" +
+                "Available modes:\n" +
+                "    mtg2bci    Compress an MTG-file into a BCI-file.\n" +
+                "    bci2mtg    Decompress a BCI-file into an MTG-file.\n" +
+                "    mtg2png    Convert an MTG-file to a PNG-file.\n";
+
+        System.out.println(output);
     }
 }

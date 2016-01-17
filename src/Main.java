@@ -35,25 +35,9 @@ import java.io.IOException;
  *   - Run the Test-class inside the tests package.
  */
 public class Main {
-    /**
-     * Print a helpful message out to the console.
-     */
-    private static void help() {
-        String output = "BCI Image Compression by Jimmy Lindström & Andreas Indal\n" +
-                        "\n" +
-                        "Usage: [mode] [input file] [output file]\n" +
-                        "\n" +
-                        "Available modes:\n" +
-                        "    mtg2bci    Compress an MTG-file into a BCI-file.\n" +
-                        "    bci2mtg    Decompress a BCI-file into an MTG-file.\n" +
-                        "    mtg2png    Convert an MTG-file to a PNG-file.\n";
-
-        System.out.println(output);
-    }
-
     public static void main(String[] args) {
         if (args.length < 3) {
-            help();
+            Application.help();
         } else {
             String mode = args[0];
             String input = args[1];
