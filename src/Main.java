@@ -1,11 +1,4 @@
 import app.Application;
-import formats.BCI;
-import formats.MTG;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Entry point for the image compression algorithm.

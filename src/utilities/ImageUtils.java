@@ -1,7 +1,5 @@
 package utilities;
 
-import java.awt.image.BufferedImage;
-
 /**
  * Class that handles calculations in color distance. Algorithms used are from
  * various websites.
