@@ -31,7 +31,7 @@ public class Application {
                     BCI.write(image, output);
                     break;
 
-                case "shit2bci":
+                case "bci2mtg":
                     image = BCI.read(input);
                     MTG.write(image, output);
                     break;
