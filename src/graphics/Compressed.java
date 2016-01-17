@@ -69,21 +69,30 @@ public class Compressed {
         out.write( v >>> 3*8);
         out.write((v >>> 2*8) & 0xFF);
         out.write((v >>>   8) & 0xFF);
-        out.write( v          & 0xFF);
+        out.write(v & 0xFF);
     }
 
     private static int read4bytes(InputStream in) throws IOException {
-        int b, v;
-        b = in.read(); if (b < 0) { throw new EOFException(); }
-        v = b<<3*8;
-        b = in.read(); if (b < 0) { throw new EOFException(); }
-        v |= b<<2*8;
-        b = in.read(); if (b < 0) { throw new EOFException(); }
-        v |= b<<1*8;
-        b = in.read(); if (b < 0) { throw new EOFException(); }
-        v |= b;
+        int b, v = 0;
+//        b = in.read(); if (b < 0) { throw new EOFException(); }
+//        v = b<<3*8;
+//        b = in.read(); if (b < 0) { throw new EOFException(); }
+//        v |= b<<2*8;
+//        b = in.read(); if (b < 0) { throw new EOFException(); }
+//        v |= b<<1*8;
+//        b = in.read(); if (b < 0) { throw new EOFException(); }
+//        v |= b;
+//        return v;
+        for (int i = 3; i >= 0; i--) {
+            b = in.read();
+            if (b < 0) {
+                throw new EOFException();
+            }
+            v |= b << i * 8;
+        }
         return v;
     }
+
 
     private static byte[] toSHIT(BufferedImage image) {
         byte[] b = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();

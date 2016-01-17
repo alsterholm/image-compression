@@ -39,17 +39,16 @@ public class BitArray implements Iterable<Byte> {
         bitX8[pos / 8] = b8;
     }
 
-    public void write(int v) {
+    public void writeByte(int v) {
         byte b = (byte) v;
         bitX8[index++] = b;
-        /*for (int i = 4; i > 0; i--) {
-            byte b = (byte)((v >>> ((i - 1) * 8)) & 0xFF);
-            bitX8[index++] = b;
-        }*/
     }
 
-    public void write(byte v) {
-
+    public void writeInt(int v) {
+        for (int i = 4; i > 0; i--) {
+            byte b = (byte)((v >>> ((i - 1) * 8)) & 0xFF);
+            bitX8[index++] = b;
+        }
     }
 
     @Override

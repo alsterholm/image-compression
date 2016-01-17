@@ -1,7 +1,5 @@
 package utilities;
 
-import java.util.BitSet;
-
 /**
  * Created by andreas on 2016-01-17.
  */
@@ -46,7 +44,7 @@ public class ReduceColors {
         BitArray bits = new BitArray(out);
 
         for (int color : PALETTE) {
-            bits.write(color);
+            bits.writeInt(color);
         }
 
         int color;
@@ -56,8 +54,8 @@ public class ReduceColors {
             int g = input[i + 1] & 0xFF;
             int b = input[i + 2] & 0xFF;
 
-            color = getCorrespondingColor(r, g, b);
-            bits.write(color);
+            color = getCorrespondingColor(b, g, r);
+            bits.writeByte(color);
         }
 
         return bits.toBytes();
@@ -80,17 +78,34 @@ public class ReduceColors {
         return out;
     }
 
-    private static int getCorrespondingColor(int r, int g, int b) {
+    private static int getCorrespondingColor(int b, int g, int r) {
         int color = -1;
         double T = r + g +b;
 
-        if (T == 0) {
+
+        if (r == 0 && g == 0 && b == 0) {
             color = 0;
         } else if (r == g && r == b) {
-            color = 232 +  (int) (T / (256 * 3)) * 24;
+            if (r > 245)
+                color = 231;
+            else 
+                color = 232 +  (int) (T / (256 * 3)) * 24;
+        //NOT WORKING!!!! //color = 16 + (int) (T / 765) * 216;
         } else {
-            color = 16 + (int) (T / 765) * 216;
+            int c = ImageUtils.toInt(b, g, r);
+            double minDistance = Double.MAX_VALUE;
+            for (int p = 0; p < PALETTE.length; p++) {
+                double d = ImageUtils.distanceInLAB(PALETTE[p], c);
+                if (d < minDistance) {
+                    color = p;
+                    minDistance = d;
+                }
+            }
         }
+
+        //if (color == 0 ) {
+         //   System.out.printf("R=%s, G=%s, B=%s\n", r, g, b);
+        //}
 
         return color;
     }
