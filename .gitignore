@@ -3,3 +3,4 @@ out/
 .idea
 image-compression.iml
 resources/
+*.class
