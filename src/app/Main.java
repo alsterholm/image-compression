@@ -1,3 +1,5 @@
+package app;
+
 import graphics.Compressed;
 import graphics.Megatron;
 

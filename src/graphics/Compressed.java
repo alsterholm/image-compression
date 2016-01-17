@@ -4,7 +4,6 @@ import utilities.ReduceColors;
 
 import java.awt.image.*;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Class to compress an image to the Seriously High-tech Image Type (SHIT) format.
@@ -12,7 +11,7 @@ import java.nio.charset.StandardCharsets;
  * @author Jimmy Lindström & Andreas Indal
  */
 public class Compressed {
-    private final static byte[] SHIT = "shitfile".getBytes(StandardCharsets.US_ASCII);
+    private final static byte[] SHIT = "shitfile".getBytes();
 
     private final static class SHITException extends IOException {}
 
@@ -22,6 +21,7 @@ public class Compressed {
 
         OutputStream out = new FileOutputStream(filename);
         out.write(SHIT);
+
         write4bytes(W, out);
         write4bytes(H, out);
 
@@ -67,10 +67,10 @@ public class Compressed {
     }
 
     private static void write4bytes(int v, OutputStream out) throws IOException {
-        out.write(v >>> 3*8);
-        out.write(v >>> 2*8 & 255);
-        out.write(v >>>   8 & 255);
-        out.write(v & 255);
+        out.write( v >>> 3*8);
+        out.write((v >>> 2*8) & 0xFF);
+        out.write((v >>>   8) & 0xFF);
+        out.write( v          & 0xFF);
     }
 
     private static int read4bytes(InputStream in) throws IOException {
@@ -87,7 +87,7 @@ public class Compressed {
     }
 
     private static byte[] toSHIT(BufferedImage image) {
-        byte[] b = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        byte[] b = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
         b = ReduceColors.run(b);
 
         return b;

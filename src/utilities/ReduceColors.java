@@ -41,14 +41,14 @@ public class ReduceColors {
             0xa8a8a8, 0xb2b2b2, 0xbcbcbc, 0xc6c6c6, 0xd0d0d0, 0xdadada, 0xe4e4e4, 0xeeeeee
     };
     public static byte[] run(byte[] input) {
-        BitArray bits = new BitArray(input.length);
         byte[] out = new byte[(256 * 4) + (input.length / 3)];
+        BitArray bits = new BitArray(out);
 
         for (int color : PALETTE) {
             bits.write(color);
         }
 
-        int color = -1;
+        int color;
 
         for (int i = 0; i < input.length; i+=3) {
             int r = input[i]     & 0xFF;

@@ -17,6 +17,13 @@ public class BitArray implements Iterable<Byte> {
         bitX8 = new byte[size / 8 + (size % 8 == 0 ? 0 : 1)];
     }
 
+    public BitArray(byte[] array) {
+        bitX8 = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            bitX8[i] = array[i];
+        }
+    }
+
     public boolean getBit(int pos) {
         return (bitX8[pos / 8] & (1 << (pos % 8))) != 0;
     }
@@ -33,10 +40,12 @@ public class BitArray implements Iterable<Byte> {
     }
 
     public void write(int v) {
-        for (int i = 4; i > 0; i--) {
+        byte b = (byte) v;
+        bitX8[index++] = b;
+        /*for (int i = 4; i > 0; i--) {
             byte b = (byte)((v >>> ((i - 1) * 8)) & 0xFF);
             bitX8[index++] = b;
-        }
+        }*/
     }
 
     public void write(byte v) {
