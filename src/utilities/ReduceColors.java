@@ -40,6 +40,7 @@ public class ReduceColors {
             0x585858, 0x606060, 0x666666, 0x767676, 0x808080, 0x8a8a8a, 0x949494, 0x9e9e9e,
             0xa8a8a8, 0xb2b2b2, 0xbcbcbc, 0xc6c6c6, 0xd0d0d0, 0xdadada, 0xe4e4e4, 0xeeeeee
     };
+
     public static byte[] run(byte[] input) {
         byte[] out = new byte[(256 * 4) + (input.length / 3)];
         BitArray bits = new BitArray(out);
@@ -60,6 +61,23 @@ public class ReduceColors {
         }
 
         return bits.toBytes();
+    }
+
+    public static byte[] revert(byte[] input) {
+        byte[] out = new byte[(input.length - (256*4)) * 3];
+
+        int s = -1;
+        for (int i = 256*4; i < input.length; i++) {
+
+            int c = PALETTE[input[i] & 0xFF];
+
+            out[++s] = (byte)((c >>> 16) & 0xFF);
+            out[++s] =  (byte)((c >>> 8) & 0xFF);
+            out[++s] = (byte)(c & 0xFF);
+
+        }
+
+        return out;
     }
 
     private static int getCorrespondingColor(int r, int g, int b) {

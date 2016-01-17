@@ -36,33 +36,32 @@ public class Compressed {
 
     public static BufferedImage read(String filename) throws IOException {
         InputStream in = new FileInputStream(filename);
+        BufferedImage img;
 
-        // Check SHIT value.
+        // Check magic value.
         for (int i = 0; i < SHIT.length; i++) {
-            if (in.read() != SHIT[i]) { throw new SHITException(); }
+            if (in.read() != SHIT[i]) { throw new IOException(); }
         }
 
+        // Read width and height
         int width  = read4bytes(in);
         int height = read4bytes(in);
 
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        byte[] buffer = new byte[4096];
 
-        byte[] pxlBytes = new byte[3];
-        int[] pxl = new int[3];
+        byte[] data = null;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
-        WritableRaster imgr  = img.getRaster();
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (in.read(pxlBytes) != 3) { throw new EOFException(); }
-                pxl[0] = pxlBytes[0];
-                pxl[1] = pxlBytes[1];
-                pxl[2] = pxlBytes[2];
-                imgr.setPixel(i, j, pxl);
+            int length = -1;
+            while ((length = in.read(buffer)) != -1) {
+                bos.write(buffer, 0, length);
             }
+
+            data = bos.toByteArray();
+
         }
 
-        in.close();
+        img = fromSHIT(width, height, data);
         return img;
     }
 
@@ -91,5 +90,29 @@ public class Compressed {
         b = ReduceColors.run(b);
 
         return b;
+    }
+
+    private static BufferedImage fromSHIT(int width, int height, byte[] bytes) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = img.getRaster();
+
+        System.out.println("Bytes (compressed) = " + bytes.length);
+
+        bytes = ReduceColors.revert(bytes);
+
+        System.out.println("Bytes (decompressed) = " + bytes.length);
+        System.out.println("Pixels (3bytes/p) = " + (bytes.length / 3));
+
+        int i = 0;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                raster.setPixel(x, y, new int[] {bytes[i] & 0xFF, bytes[i + 1] & 0xFF, bytes[i + 2] & 0xFF});
+
+                i += 3;
+            }
+        }
+
+        return img;
     }
 }
