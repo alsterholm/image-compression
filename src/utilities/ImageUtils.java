@@ -2,83 +2,14 @@ package utilities;
 
 import java.awt.image.BufferedImage;
 
-/**
- * Created by Jimmy on 2016-01-17.
+/**Class that handles calculations in color distance. Algorithms used are from
+ * various webpages.
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class ImageUtils {
 
     private ImageUtils() {}
-
-    /** returns the Image type of the int
-     * @param type
-     * @return
-     */
-    public static String typeToString(int type) {
-        switch (type) {
-            case BufferedImage.TYPE_INT_ARGB:
-                return "INT_ARGB";
-            case BufferedImage.TYPE_INT_ARGB_PRE:
-                return "INT_ARGB_PRE";
-            case BufferedImage.TYPE_INT_RGB:
-                return "INT_RGB";
-            case BufferedImage.TYPE_4BYTE_ABGR:
-                return "4BYTE_ABGR";
-            case BufferedImage.TYPE_BYTE_GRAY:
-                return "BYTE_GRAY";
-            case BufferedImage.TYPE_CUSTOM:
-                return "CUSTOM";
-            case BufferedImage.TYPE_BYTE_BINARY:
-                return "BYTE_BINARY";
-            case BufferedImage.TYPE_INT_BGR:
-                return "BYTE_BGR";
-            case BufferedImage.TYPE_3BYTE_BGR:
-                return "3BYTE_BGR";
-            case BufferedImage.TYPE_4BYTE_ABGR_PRE:
-                return "4BYTE_ABGR_PRE";
-            case BufferedImage.TYPE_BYTE_INDEXED:
-                return "BYTE_INDEXED";
-            default:
-                return "UNKNOWN";
-        }
-    }
-
-    /**
-     * Clamps the value so that values larger than max are set to max. And values smaller than min are set to min.
-     *
-     * @param value Value to clamp
-     * @param min Minimum allowed value
-     * @param max Maximum allowed value
-     * @return The clamped value
-     */
-    public static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
-
-    /**
-     * Returns the Euclidean distance between two RGB colors. The two colors are mapped to a three-dimensional
-     * space (with the dimensions R, G and B) and the Euclidean distance is calculated.
-     *
-     * @param c1 First color
-     * @param c2 Second color
-     * @return Distance between colors
-     */
-    public static double distance(int c1, int c2) {
-        int r1 = (c1 >> 16) & 0xFF;
-        int g1 = (c1 >> 8) & 0xFF;
-        int b1 = c1 & 0xFF;
-
-        int r2 = (c2 >> 16) & 0xFF;
-        int g2 = (c2 >> 8) & 0xFF;
-        int b2 = c2 & 0xFF;
-
-        // Normal Euclidean distance
-        return Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));
-
-        // Algorithm taken from http://www.compuphase.com/cmetric.htm, presents a possibly more 'human' perception of color difference
-        // and is cheaper to calculate than converting to another color space
-        //double rMean = (r1 + r2) / (double)2;
-        //return Math.sqrt(((int)((512 + rMean) * Math.pow(r1 - r2, 2)) >> 8) + 4 * Math.pow(g1 - g2, 2) + ((int)((767 - rMean) * Math.pow(b1 - b2, 2)) >> 8));
-    }
 
     /**
      * Calculates the distance (delta E) between two RGB colors by first converting them into LAB color space, then calculates
@@ -149,26 +80,6 @@ public class ImageUtils {
         lab[2] = 200 * (y - z);
 
         return lab;
-
-    }
-
-    /**
-     * Returns the average ARGB-value between two specified ARGB-values
-     *
-     * @param c1 first ARGB-value
-     * @param c2 second ARGB-value
-     * @return the average ARGB-value
-     */
-    public static int average(int c1, int c2) {
-        int r1 = (c1 >> 16) & 0xFF;
-        int g1 = (c1 >> 8) & 0xFF;
-        int b1 = c1 & 0xFF;
-
-        int r2 = (c2 >> 16) & 0xFF;
-        int g2 = (c2 >> 8) & 0xFF;
-        int b2 = c2 & 0xFF;
-
-        return ImageUtils.toInt((r1+r2)/2, (g1+g2)/2, (b1+b2)/2);
     }
 
     /**
@@ -187,14 +98,5 @@ public class ImageUtils {
         argb += b & 0xFF;
 
         return argb;
-    }
-
-    public static String toString(int argb) {
-        int a = (argb >> 24) & 0xFF;
-        int r = (argb >> 16) & 0xFF;
-        int g = (argb >> 8) & 0xFF;
-        int b = argb & 0xFF;
-
-        return String.format("Color[%d, %d, %d, %d]", a, r, g, b);
     }
 }

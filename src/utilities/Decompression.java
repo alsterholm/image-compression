@@ -3,7 +3,8 @@ package utilities;
 import java.util.Arrays;
 
 /**Class that handles the decompression of a BCI file back to a MTG file
- * Created by andreas on 2016-01-17.
+ * @author Jimmy Lindström (ae7220)
+ * @author Andreas Indal (ae2922)
  */
 public class Decompression {
     private static final int RESERVED_FOR_COLORS = 1024;
