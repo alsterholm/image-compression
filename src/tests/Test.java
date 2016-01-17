@@ -5,8 +5,8 @@ package tests;
  */
 public class Test {
     public static void main(String[] args) {
-        TestMTG2SHIT.main(args);
-        TestSHIT2MTG.main(args);
+        TestMTG2BCI.main(args);
+        TestBCI2MTG.main(args);
         TestMTG2PNG.main(args);
     }
 }

@@ -7,27 +7,25 @@ import java.awt.image.*;
 import java.io.*;
 
 /**
- * Class to compress an image to the Seriously High-tech Image Type (SHIT) format.
+ * Class to compress an image to the Seriously High-tech Image Type (BCI) format.
  *
  * @author Jimmy Lindström & Andreas Indal
  */
 public class BCI {
-    private final static byte[] SHIT = "shitfile".getBytes();
-
-    private final static class SHITException extends IOException {}
+    private final static byte[] BCI = "bci_file".getBytes();
 
     public static void write(BufferedImage image, String filename) throws IOException {
         int W = image.getWidth();
         int H = image.getHeight();
 
         OutputStream out = new FileOutputStream(filename);
-        out.write(SHIT);
+        out.write(BCI);
 
         write4bytes(W, out);
         write4bytes(H, out);
 
         ReduceColors.setPalette(CustomPalette.create(image));
-        byte[] b = toSHIT(image);
+        byte[] b = compress(image);
 
         for (int i = 0; i < b.length; i++) {
             out.write(b[i]);
@@ -41,8 +39,8 @@ public class BCI {
         BufferedImage img;
 
         // Check magic value.
-        for (int i = 0; i < SHIT.length; i++) {
-            if (in.read() != SHIT[i]) { throw new IOException(); }
+        for (int i = 0; i < BCI.length; i++) {
+            if (in.read() != BCI[i]) { throw new IOException(); }
         }
 
         // Read width and height
@@ -63,7 +61,7 @@ public class BCI {
 
         }
 
-        img = fromSHIT(width, height, data);
+        img = decompress(width, height, data);
         return img;
     }
 
@@ -96,14 +94,14 @@ public class BCI {
     }
 
 
-    private static byte[] toSHIT(BufferedImage image) {
+    private static byte[] compress(BufferedImage image) {
         byte[] b = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
         b = ReduceColors.run(b);
 
         return b;
     }
 
-    private static BufferedImage fromSHIT(int width, int height, byte[] bytes) {
+    private static BufferedImage decompress(int width, int height, byte[] bytes) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = img.getRaster();
 

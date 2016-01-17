@@ -1,7 +1,7 @@
 package app;
 
-import graphics.Compressed;
-import graphics.Megatron;
+import formats.BCI;
+import formats.MTG;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -17,13 +17,13 @@ public class Main {
         try {
             switch (mode) {
                 case "mtg2shit":
-                    image = Megatron.read(input);
-                    Compressed.write(image, output);
+                    image = MTG.read(input);
+                    BCI.write(image, output);
                     break;
 
                 case "shit2mtg":
-                    image = Compressed.read(input);
-                    Megatron.write(image, output);
+                    image = BCI.read(input);
+                    MTG.write(image, output);
                     break;
 
                 case "shit2png":
@@ -33,7 +33,7 @@ public class Main {
                     break;
 
                 case "mtg2png":
-                    image = Megatron.read(input);
+                    image = MTG.read(input);
                     ImageIO.write(image, "PNG", new File(output));
                     break;
 
